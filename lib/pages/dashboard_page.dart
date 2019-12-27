@@ -1,4 +1,4 @@
-import 'package:fisher_notes/common/drawer.dart';
+import 'package:fisher_notes/common/left_drawer.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {

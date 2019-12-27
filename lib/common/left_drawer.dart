@@ -3,7 +3,6 @@ import 'package:fisher_notes/providers/common_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class LeftDrawer extends StatefulWidget { 
 
   @override
@@ -18,29 +17,24 @@ class _LeftDrawerState extends State<LeftDrawer> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Column(
-              children: <Widget>[
-                Text('Drawer Header'),
-                Consumer<CommonProvider>(
-                  builder: (context, commonModel,_){
-                    return Switch(
-                      value: commonModel.themeMode == ThemeMode.dark,                      
-                      onChanged: (newValue){
-                        commonModel.changeTheme(newValue ==true ? ThemeMode.dark : ThemeMode.light);                        
-                      }
-                    );
-                  }
-                )                
-              ],
-              ),
+          UserAccountsDrawerHeader(
+            //TODO: Need to add authorize
+            accountName: Text('Maksym Kravchuk'),
+            accountEmail: Text('mak7.kr@gmail.com'),            
             decoration: BoxDecoration(
-              color: Colors.blue,
+              image: DecorationImage(
+                image: AssetImage('assets/images/temp/drawer_header.jpg'),
+                fit: BoxFit.cover
+              )
             ),
+            currentAccountPicture: CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/temp/user_logo.jpg')),
           ),
+
           Consumer<CommonProvider>(
             builder: (context, model,_){
               return ListTile(
+                leading: Icon(Icons.dashboard),
                 title: Text('Dashboard'),
                 selected: model.selectedRouteName == Constants.ROOUTE_NAME_TO_INIT_PAGE,
                 onTap: () {                  
@@ -52,6 +46,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
           Consumer<CommonProvider>(
             builder: (context, model,_){
               return ListTile(
+                leading: Icon(Icons.extension),
                 title: Text('StoreRoom'),
                 selected: model.selectedRouteName == Constants.ROOUTE_NAME_TO_STORE_ROOM_PAGE,
                 onTap: () {          
@@ -60,6 +55,26 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 },
               );
             },),
+          Divider(),
+          Consumer<CommonProvider>(
+            builder: (context, commonModel,_){
+              return ListTile(                
+                leading: Icon(Icons.brightness_3 ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Dark theme'),
+                    Switch(
+                      value: commonModel.themeMode == ThemeMode.dark,                      
+                      onChanged: (newValue){
+                        commonModel.changeTheme(newValue ==true ? ThemeMode.dark : ThemeMode.light);                        
+                      }
+                    )
+                  ],
+                )
+              );
+            }
+          )
         ],
       )
     );
