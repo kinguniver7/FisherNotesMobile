@@ -35,6 +35,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  fonts:
+  - family:  FNIcons
+    fonts:
+      - asset: fonts/FNIcons.ttf
   assets:
     - assets/
     - assets/images/temp/

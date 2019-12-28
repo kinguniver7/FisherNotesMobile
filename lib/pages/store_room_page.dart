@@ -1,7 +1,36 @@
+import 'package:fisher_notes/common/f__n_icons.dart';
 import 'package:fisher_notes/common/left_drawer.dart';
+import 'package:fisher_notes/pages/store_room/fab_bottom_app_bar.dart';
+import 'package:fisher_notes/pages/store_room/fab_with_icons.dart';
 import 'package:flutter/material.dart';
 
-class StoreRoomPage extends StatelessWidget {
+class StoreRoomPage extends StatefulWidget {
+  StoreRoomPage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _StoreRoomPage createState() => new _StoreRoomPage();
+}
+
+class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin {
+
+  String _lastSelected = 'TAB: 0';
+
+  void _selectedTab(int index) {
+    setState(() {
+      _lastSelected = 'TAB: $index';
+    });
+  }
+
+  void _selectedFab(int index) {
+    setState(() {
+      _lastSelected = 'FAB: $index';
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +53,179 @@ class StoreRoomPage extends StatelessWidget {
         ],             
         ),
       body: Text('Store room page'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: _buildFab(context),
+      bottomNavigationBar: FABBottomAppBar(
+        centerItemText: 'Add',        
+        notchedShape: CircularNotchedRectangle(),
+        onTabSelected: _selectedTab,
+        items: [
+          FABBottomAppBarItem(iconData: FNIcons.rod, text: 'Rods'),
+          FABBottomAppBarItem(iconData: FNIcons.reel, text: 'Reels'),
+          FABBottomAppBarItem(iconData: FNIcons.bait, text: 'Tackle'),
+          FABBottomAppBarItem(iconData: FNIcons.bait, text: 'Baits'),
+        ],
+      ),
       );
+  }
+
+
+
+
+  Widget _buildFab(BuildContext context) {
+    final icons = [ FNIcons.rod, FNIcons.reel, FNIcons.bait ];
+    return AnchoredOverlay(      
+      showOverlay: true,
+      overlayBuilder: (context, offset) {
+        return CenterAbout(
+          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+          child: FabWithIcons(
+            icons: icons,
+            onIconTapped: _selectedFab,
+          ),
+        );
+      },
+      child: FloatingActionButton(
+        onPressed: () { },
+        child: Icon(Icons.add),
+        elevation: 2.0,
+      ),
+    );
+  }
+}
+
+
+
+class AnchoredOverlay extends StatelessWidget {
+  final bool showOverlay;
+  final Widget Function(BuildContext, Offset anchor) overlayBuilder;
+  final Widget child;
+
+  AnchoredOverlay({
+    this.showOverlay,
+    this.overlayBuilder,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        return new OverlayBuilder(
+          showOverlay: showOverlay,
+          overlayBuilder: (BuildContext overlayContext) {
+            RenderBox box = context.findRenderObject() as RenderBox;
+            final center = box.size.center(box.localToGlobal(const Offset(0.0, 0.0)));
+
+            return overlayBuilder(overlayContext, center);
+          },
+          child: child,
+        );
+      }),
+    );
+  }
+}
+
+class OverlayBuilder extends StatefulWidget {
+  final bool showOverlay;
+  final Function(BuildContext) overlayBuilder;
+  final Widget child;
+
+  OverlayBuilder({
+    this.showOverlay = false,
+    this.overlayBuilder,
+    this.child,
+  });
+
+  @override
+  _OverlayBuilderState createState() => new _OverlayBuilderState();
+}
+
+class _OverlayBuilderState extends State<OverlayBuilder> {
+  OverlayEntry overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.showOverlay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => showOverlay());
+    }
+  }
+
+  @override
+  void didUpdateWidget(OverlayBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
+  }
+
+  @override
+  void dispose() {
+    if (isShowingOverlay()) {
+      hideOverlay();
+    }
+
+    super.dispose();
+  }
+
+  bool isShowingOverlay() => overlayEntry != null;
+
+  void showOverlay() {
+    overlayEntry = new OverlayEntry(
+      builder: widget.overlayBuilder,
+    );
+    addToOverlay(overlayEntry);
+  }
+
+  void addToOverlay(OverlayEntry entry) async {
+    print('addToOverlay');
+    Overlay.of(context).insert(entry);
+  }
+
+  void hideOverlay() {
+    print('hideOverlay');
+    overlayEntry.remove();
+    overlayEntry = null;
+  }
+
+  void syncWidgetAndOverlay() {
+    if (isShowingOverlay() && !widget.showOverlay) {
+      hideOverlay();
+    } else if (!isShowingOverlay() && widget.showOverlay) {
+      showOverlay();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class CenterAbout extends StatelessWidget {
+  final Offset position;
+  final Widget child;
+
+  CenterAbout({
+    this.position,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return new Positioned(
+      top: position.dy,
+      left: position.dx,
+      child: new FractionalTranslation(
+        translation: const Offset(-0.5, -0.5),
+        child: child,
+      ),
+    );
   }
 }
