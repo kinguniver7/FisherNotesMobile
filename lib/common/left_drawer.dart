@@ -1,4 +1,5 @@
 import 'package:fisher_notes/common/constants.dart';
+import 'package:fisher_notes/common/f_n_icons.dart';
 import 'package:fisher_notes/providers/common_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
           Consumer<CommonProvider>(
             builder: (context, model,_){
               return ListTile(
-                leading: Icon(Icons.extension),
+                leading: Icon(FNIcons.backpack),
                 title: Text('StoreRoom'),
                 selected: model.selectedRouteName == Constants.ROOUTE_NAME_TO_STORE_ROOM_PAGE,
                 onTap: () {          

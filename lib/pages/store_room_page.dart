@@ -1,4 +1,4 @@
-import 'package:fisher_notes/common/f__n_icons.dart';
+import 'package:fisher_notes/common/f_n_icons.dart';
 import 'package:fisher_notes/common/left_drawer.dart';
 import 'package:fisher_notes/pages/store_room/fab_bottom_app_bar.dart';
 import 'package:fisher_notes/pages/store_room/fab_with_icons.dart';
@@ -10,7 +10,7 @@ class StoreRoomPage extends StatefulWidget {
   final String title;
 
   @override
-  _StoreRoomPage createState() => new _StoreRoomPage();
+  _StoreRoomPage createState() => _StoreRoomPage();
 }
 
 class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin {
@@ -62,8 +62,8 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
         items: [
           FABBottomAppBarItem(iconData: FNIcons.rod, text: 'Rods'),
           FABBottomAppBarItem(iconData: FNIcons.reel, text: 'Reels'),
-          FABBottomAppBarItem(iconData: FNIcons.bait, text: 'Tackle'),
           FABBottomAppBarItem(iconData: FNIcons.bait, text: 'Baits'),
+          FABBottomAppBarItem(iconData: FNIcons.tackle, text: 'Tackle'),
         ],
       ),
       );
@@ -73,14 +73,14 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
 
 
   Widget _buildFab(BuildContext context) {
-    final icons = [ FNIcons.rod, FNIcons.reel, FNIcons.bait ];
+    final icons = [ FNIcons.tackle, FNIcons.bait, FNIcons.reel, FNIcons.rod  ];
     return AnchoredOverlay(      
       showOverlay: true,
       overlayBuilder: (context, offset) {
         return CenterAbout(
-          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+          position: Offset(offset.dx, offset.dy - icons.length * 35.0),          
           child: FabWithIcons(
-            icons: icons,
+            icons: icons,            
             onIconTapped: _selectedFab,
           ),
         );
@@ -109,9 +109,9 @@ class AnchoredOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-        return new OverlayBuilder(
+    return Container(
+      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        return OverlayBuilder(
           showOverlay: showOverlay,
           overlayBuilder: (BuildContext overlayContext) {
             RenderBox box = context.findRenderObject() as RenderBox;
@@ -138,7 +138,7 @@ class OverlayBuilder extends StatefulWidget {
   });
 
   @override
-  _OverlayBuilderState createState() => new _OverlayBuilderState();
+  _OverlayBuilderState createState() => _OverlayBuilderState();
 }
 
 class _OverlayBuilderState extends State<OverlayBuilder> {
@@ -177,7 +177,7 @@ class _OverlayBuilderState extends State<OverlayBuilder> {
   bool isShowingOverlay() => overlayEntry != null;
 
   void showOverlay() {
-    overlayEntry = new OverlayEntry(
+    overlayEntry = OverlayEntry(
       builder: widget.overlayBuilder,
     );
     addToOverlay(overlayEntry);
@@ -219,10 +219,10 @@ class CenterAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Positioned(
+    return Positioned(
       top: position.dy,
       left: position.dx,
-      child: new FractionalTranslation(
+      child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
         child: child,
       ),
