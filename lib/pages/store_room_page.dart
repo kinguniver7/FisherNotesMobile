@@ -69,9 +69,6 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
       );
   }
 
-
-
-
   Widget _buildFab(BuildContext context) {
     final icons = [ FNIcons.tackle, FNIcons.bait, FNIcons.reel, FNIcons.rod  ];
     return AnchoredOverlay(      
