@@ -1,7 +1,9 @@
 import 'package:fisher_notes/common/f_n_icons.dart';
 import 'package:fisher_notes/common/left_drawer.dart';
+import 'package:fisher_notes/models/thing_model.dart';
 import 'package:fisher_notes/pages/store_room/fab_bottom_app_bar.dart';
 import 'package:fisher_notes/pages/store_room/fab_with_icons.dart';
+import 'package:fisher_notes/widgets/thing_card.dart';
 import 'package:flutter/material.dart';
 
 class StoreRoomPage extends StatefulWidget {
@@ -52,7 +54,11 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
           )
         ],             
         ),
-      body: Text('Store room page'),
+      body: Column(
+        children: <Widget>[
+          buildThingList()
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _buildFab(context),
       bottomNavigationBar: FABBottomAppBar(
@@ -66,6 +72,7 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
           FABBottomAppBarItem(iconData: FNIcons.tackle, text: 'Tackle'),
         ],
       ),
+      
       );
   }
 
@@ -86,6 +93,22 @@ class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin 
         onPressed: () { },
         child: Icon(Icons.add),
         elevation: 2.0,
+      ),
+    );
+  }
+
+  Widget buildThingList() {
+    return Expanded(
+      child: GridView.count(
+        //itemCount: foods.length,
+        childAspectRatio: 0.85,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        crossAxisCount: 2,
+        physics: BouncingScrollPhysics(),
+        children: things.map((food) {
+          return ThingCard(food);
+        }).toList(),
       ),
     );
   }
