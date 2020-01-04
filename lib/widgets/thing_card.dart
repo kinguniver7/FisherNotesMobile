@@ -19,7 +19,7 @@ class _ThingCardState extends State<ThingCard> {
       body: Container(
       child: new GestureDetector(
         onTap: ()=>{
-          Navigator.pushNamed(context, '/ThingDetail', arguments: 1)
+          Navigator.pushNamed(context, Constants.ROOUTE_NAME_TO_THING_DETAIL_PAGE, arguments: 1)
         },
         child: Card(
           shape: RoundedRectangleBorder(

@@ -8,8 +8,14 @@ class ThingDetailsPage extends StatefulWidget {
 class _ThingDetailsPageState extends State<ThingDetailsPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Details'),
+      ),
+      body: Container(
+        child: Text("Page"),
+      ),
     );
   }
 }

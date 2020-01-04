@@ -1,251 +1,113 @@
+import 'package:fisher_notes/common/constants.dart';
 import 'package:fisher_notes/common/f_n_icons.dart';
 import 'package:fisher_notes/common/left_drawer.dart';
+import 'package:fisher_notes/models/enums/fishing_type.dart';
+import 'package:fisher_notes/models/enums/thing_type.dart';
 import 'package:fisher_notes/models/thing_model.dart';
-import 'package:fisher_notes/pages/store_room/fab_bottom_app_bar.dart';
-import 'package:fisher_notes/pages/store_room/fab_with_icons.dart';
+import 'package:fisher_notes/providers/store_room_provider.dart';
 import 'package:fisher_notes/widgets/thing_card.dart';
 import 'package:flutter/material.dart';
 
-class StoreRoomPage extends StatefulWidget {
+import 'package:fab_circular_menu/fab_circular_menu.dart';
+import 'package:provider/provider.dart';
+
+class StoreRoomPage extends StatelessWidget {
   StoreRoomPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _StoreRoomPage createState() => _StoreRoomPage();
+  Widget build(BuildContext context) {    
+    return ChangeNotifierProvider(
+      create: (_)=> StoreRoomProvider(),
+      child: Scaffold(
+        drawer: LeftDrawer(),
+        appBar: AppBar(
+          title: Text('Store Room'),   
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.tune),
+              onPressed: () {},
+            )
+          ],             
+        ),
+        body: StoreRoomList(),
+        bottomNavigationBar: NavigationBarWidget()      
+      ),
+    ); 
+  }
+}  
+
+class NavigationBarWidget extends StatefulWidget {
+  @override
+  _NavigationBarWidgetState createState() => _NavigationBarWidgetState();
 }
 
-class _StoreRoomPage extends State<StoreRoomPage> with TickerProviderStateMixin {
-
-  String _lastSelected = 'TAB: 0';
-
-  void _selectedTab(int index) {
-    setState(() {
-      _lastSelected = 'TAB: $index';
-    });
-  }
-
-  void _selectedFab(int index) {
-    setState(() {
-      _lastSelected = 'FAB: $index';
-    });
-  }
-
-
-
+class _NavigationBarWidgetState extends State<NavigationBarWidget> {
+  int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: LeftDrawer(),
-      appBar: AppBar(
-        title: Text('Store Room'),   
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              
-            },
-          ),
-           IconButton(
-            icon: Icon(Icons.tune),
-            onPressed: () {
-              
-            },
-          )
-        ],             
-        ),
-      body: Column(
-        children: <Widget>[
-          buildThingList()
+    return BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        //unselectedItemColor: isDark ? Colors.white : Colors.black,
+        //selectedItemColor: isDark ? Theme.of(context).accentColor : Colors.black,
+        items:  const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(FNIcons.rod),  title: Text('Rods')),//0
+          BottomNavigationBarItem(icon: Icon(FNIcons.reel), title: Text('Reels')),//1
+          BottomNavigationBarItem(icon: Icon(FNIcons.bait), title: Text('Baits')),//2
+          BottomNavigationBarItem(icon: Icon(FNIcons.tackle), title: Text('Tackle')),//3
         ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _buildFab(context),
-      bottomNavigationBar: FABBottomAppBar(
-        centerItemText: 'Add',        
-        notchedShape: CircularNotchedRectangle(),
-        onTabSelected: _selectedTab,
-        items: [
-          FABBottomAppBarItem(iconData: FNIcons.rod, text: 'Rods'),
-          FABBottomAppBarItem(iconData: FNIcons.reel, text: 'Reels'),
-          FABBottomAppBarItem(iconData: FNIcons.bait, text: 'Baits'),
-          FABBottomAppBarItem(iconData: FNIcons.tackle, text: 'Tackle'),
-        ],
-      ),
-      
+        currentIndex: Provider.of<StoreRoomProvider>(context).selectedIndexTab,
+        onTap: (index)=>{
+          setState(()=>{
+            selectedIndex = index,
+            Provider.of<StoreRoomProvider>(context).onClickNavigationTab(index)
+          })
+        },        
       );
   }
-
-  Widget _buildFab(BuildContext context) {
-    final icons = [ FNIcons.tackle, FNIcons.bait, FNIcons.reel, FNIcons.rod  ];
-    return AnchoredOverlay(      
-      showOverlay: true,
-      overlayBuilder: (context, offset) {
-        return CenterAbout(
-          position: Offset(offset.dx, offset.dy - icons.length * 35.0),          
-          child: FabWithIcons(
-            icons: icons,            
-            onIconTapped: _selectedFab,
-          ),
-        );
-      },
-      child: FloatingActionButton(
-        onPressed: () { },
-        child: Icon(Icons.add),
-        elevation: 2.0,
-      ),
-    );
-  }
-
-  Widget buildThingList() {
-    return Expanded(
-      child: GridView.count(
-        //itemCount: foods.length,
-        childAspectRatio: 0.85,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        crossAxisCount: 2,
-        physics: BouncingScrollPhysics(),
-        children: things.map((food) {
-          return ThingCard(food);
-        }).toList(),
-      ),
-    );
-  }
 }
 
+class StoreRoomList extends StatefulWidget {
+  @override
+  _StoreRoomListState createState() => _StoreRoomListState();
+}
 
-
-class AnchoredOverlay extends StatelessWidget {
-  final bool showOverlay;
-  final Widget Function(BuildContext, Offset anchor) overlayBuilder;
-  final Widget child;
-
-  AnchoredOverlay({
-    this.showOverlay,
-    this.overlayBuilder,
-    this.child,
-  });
-
+class _StoreRoomListState extends State<StoreRoomList> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-        return OverlayBuilder(
-          showOverlay: showOverlay,
-          overlayBuilder: (BuildContext overlayContext) {
-            RenderBox box = context.findRenderObject() as RenderBox;
-            final center = box.size.center(box.localToGlobal(const Offset(0.0, 0.0)));
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-            return overlayBuilder(overlayContext, center);
-          },
-          child: child,
-        );
-      }),
-    );
-  }
-}
-
-class OverlayBuilder extends StatefulWidget {
-  final bool showOverlay;
-  final Function(BuildContext) overlayBuilder;
-  final Widget child;
-
-  OverlayBuilder({
-    this.showOverlay = false,
-    this.overlayBuilder,
-    this.child,
-  });
-
-  @override
-  _OverlayBuilderState createState() => _OverlayBuilderState();
-}
-
-class _OverlayBuilderState extends State<OverlayBuilder> {
-  OverlayEntry overlayEntry;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.showOverlay) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => showOverlay());
-    }
-  }
-
-  @override
-  void didUpdateWidget(OverlayBuilder oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
-  }
-
-  @override
-  void dispose() {
-    if (isShowingOverlay()) {
-      hideOverlay();
-    }
-
-    super.dispose();
-  }
-
-  bool isShowingOverlay() => overlayEntry != null;
-
-  void showOverlay() {
-    overlayEntry = OverlayEntry(
-      builder: widget.overlayBuilder,
-    );
-    addToOverlay(overlayEntry);
-  }
-
-  void addToOverlay(OverlayEntry entry) async {
-    print('addToOverlay');
-    Overlay.of(context).insert(entry);
-  }
-
-  void hideOverlay() {
-    print('hideOverlay');
-    overlayEntry.remove();
-    overlayEntry = null;
-  }
-
-  void syncWidgetAndOverlay() {
-    if (isShowingOverlay() && !widget.showOverlay) {
-      hideOverlay();
-    } else if (!isShowingOverlay() && widget.showOverlay) {
-      showOverlay();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
-}
-
-class CenterAbout extends StatelessWidget {
-  final Offset position;
-  final Widget child;
-
-  CenterAbout({
-    this.position,
-    this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: position.dy,
-      left: position.dx,
-      child: FractionalTranslation(
-        translation: const Offset(-0.5, -0.5),
-        child: child,
-      ),
-    );
+    return FabCircularMenu(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: GridView.count(
+                //itemCount: foods.length,
+                childAspectRatio: 0.85,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                crossAxisCount: 2,
+                physics: BouncingScrollPhysics(),
+                children: things.where((c)=> c.type == Provider.of<StoreRoomProvider>(context).selectedThingType).map((food) {
+                  return ThingCard(food);
+                }).toList(),
+              ),
+            )
+          ],
+        ),
+        ringColor: isDark ? Theme.of(context).accentColor :  Theme.of(context).primaryColor,    
+        ringDiameter: MediaQuery.of(context).size.width * 0.6,
+        options: <Widget>[
+          IconButton(icon: Icon(FNIcons.rod), color: Colors.white, onPressed: () { Navigator.pushNamed(context, Constants.ROOUTE_NAME_TO_ADD_OR_EDIT_ROD_PAGE);}),//0
+          IconButton(icon: Icon(FNIcons.reel), color: Colors.white, onPressed: () { print('Pressed!');}),//1          
+          IconButton(icon: Icon(FNIcons.bait), color: Colors.white, onPressed: () { print('Pressed!');}),//2
+          IconButton(icon: Icon(FNIcons.tackle), color: Colors.white, onPressed: () { print('Pressed!');})//3
+        ]
+      );
   }
 }
